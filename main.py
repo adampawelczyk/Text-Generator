@@ -1,4 +1,5 @@
 from nltk.tokenize import WhitespaceTokenizer
+from nltk import bigrams
 
 
 file_name = input()
@@ -7,10 +8,9 @@ with open(file_name, encoding='utf-8') as file:
     file_content = file.read()
     whitespace_tokenizer = WhitespaceTokenizer()
     file_tokens = whitespace_tokenizer.tokenize(file_content)
+    bigram = list(bigrams(file_tokens))
 
-    print("Corpus statistics")
-    print(f"All tokens: {len(file_tokens)}")
-    print(f"Unique tokens: {len(set(file_tokens))}")
+    print(f"Number of bigrams: {len(bigram)}")
     print()
 
     while True:
@@ -20,10 +20,10 @@ with open(file_name, encoding='utf-8') as file:
                 exit(0)
             index = int(index)
 
-            if index > len(file_tokens) - 1:
-                print("Index error. Please input an integer that is in the range of the corpus.")
+            if index > len(bigram) - 1:
+                print("Index error. Please input an integer that is not greater that the number of all bigrams.")
             else:
-                print(file_tokens[index])
+                print(f"Head: {bigram[index][0]}\t\tTail: {bigram[index][1]}")
 
         except ValueError:
             print("Type Error. Please input an integer.")
