@@ -1,6 +1,14 @@
 from nltk.tokenize import WhitespaceTokenizer
 from nltk import bigrams
 from collections import defaultdict, Counter
+from random import choices, choice
+
+
+def predict_next_word(word):
+    list_of_tails = [x[0] for x in markov_model[word]]
+    tails_occurrence_count = [x[1] for x in markov_model[word]]
+
+    return choices(list_of_tails, tails_occurrence_count)[0]
 
 
 file_name = input()
@@ -19,17 +27,15 @@ with open(file_name, encoding='utf-8') as file:
     for key in bigrams_dict.keys():
         markov_model[key] = Counter(bigrams_dict[key]).most_common()
 
-    while True:
-        index = input()
-        if index == "exit":
-            exit(0)
+    first_word = choice(list(markov_model.keys()))
 
-        print(f"Head: {index}")
+    sentences = list()
+    sentences.append(first_word)
+    next_word = predict_next_word(first_word)
 
-        if index in markov_model:
-            for item in markov_model[index]:
-                print(f"Head: {item[0]}\t\tTail: {item[1]}")
-        else:
-            print("Key Error. The requested word is not in the model. Please input another one")
+    for _ in range(99):
+        next_word = predict_next_word(next_word)
+        sentences.append(next_word)
 
-        print()
+    for i in range(len(sentences) // 10 + 1):
+        print(" ".join(sentences[i * 10: (i + 1) * 10]))
