@@ -11,6 +11,28 @@ def predict_next_word(word):
     return choices(list_of_tails, tails_occurrence_count)[0]
 
 
+def generate_sentence():
+    sentence = list()
+
+    while True:
+        if len(sentence) == 0:
+            word = choice(list(markov_model.keys()))
+            while word[0].islower() or not word[0].isalpha():
+                word = choice(list(markov_model.keys()))
+            sentence.append(word)
+        else:
+            if sentence[-1][-1] in ".,?":
+                if len(sentence) < 5:
+                    sentence = []
+                    continue
+                else:
+                    return sentence
+            else:
+                next_word = predict_next_word(word)
+                word = next_word
+                sentence.append(word)
+
+
 file_name = input()
 
 with open(file_name, encoding='utf-8') as file:
@@ -27,15 +49,5 @@ with open(file_name, encoding='utf-8') as file:
     for key in bigrams_dict.keys():
         markov_model[key] = Counter(bigrams_dict[key]).most_common()
 
-    first_word = choice(list(markov_model.keys()))
-
-    sentences = list()
-    sentences.append(first_word)
-    next_word = predict_next_word(first_word)
-
-    for _ in range(99):
-        next_word = predict_next_word(next_word)
-        sentences.append(next_word)
-
-    for i in range(len(sentences) // 10 + 1):
-        print(" ".join(sentences[i * 10: (i + 1) * 10]))
+    for _ in range(10):
+        print(*generate_sentence())
